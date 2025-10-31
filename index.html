@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+    <title>C1 Grammar Test</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+          font-family: 'Inter', sans-serif;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          color: #e2e8f0;
+          min-height: 100vh;
+          padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+          overflow: hidden;
+          user-select: none;
+        }
+        .container {
+          max-width: 100%;
+          margin: 0 auto;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+        }
+
+        /* BACKGROUND – SUBTLE PULSE */
+        .bg-animation {
+          position: absolute;
+          top: 0; left: 0; width: 100%; height: 100%;
+          background: radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+          animation: pulseBg 8s ease-in-out infinite;
+          pointer-events: none;
+          z-index: 0;
+        }
+        @keyframes pulseBg {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 1; }
+        }
+
+        /* HEADER – ELEGANT GLOW */
+        .header {
+          background: rgba(30, 41, 59, 0.9);
+          backdrop-filter: blur(12px);
+          padding: 18px 20px;
+          text-align: center;
+          position: relative;
+          box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+          z-index: 10;
+          border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .header h1 {
+          font-size: clamp(1.5rem, 5.5vw, 2rem);
+          margin: 0;
+          font-weight: 800;
+          background: linear-gradient(135deg, #60a5fa, #a78bfa);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: titleGlow 2.5s ease-in-out infinite alternate;
+        }
+        @keyframes titleGlow {
+          from { filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.5)); }
+          to { filter: drop-shadow(0 0 18px rgba(167, 139, 250, 0.8)); }
+        }
+
+        .timer {
+          position: absolute;
+          right: 16px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: #dc2626;
+          color: white;
+          padding: 8px 16px;
+          border-radius: 50px;
+          font-weight: 700;
+          font-size: clamp(1rem, 3.5vw, 1.2rem);
+          box-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
+          animation: timerPulse 1.2s infinite;
+        }
+        @keyframes timerPulse {
+          0%, 100% { transform: translateY(-50%) scale(1); }
+          50% { transform: translateY(-50%) scale(1.08); }
+        }
+
+        /* SCREENS – SMOOTH FADE + SLIDE */
+        .content {
+          flex: 1;
+          padding: 20px;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          position: relative;
+          z-index: 1;
+        }
+        .screen { display: none; }
+        .screen.active {
+          display: block;
+          animation: screenIn 0.4s ease-out;
+        }
+        @keyframes screenIn {
+          from { opacity: 0; transform: translateY(20px) scale(0.98); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* START SCREEN – BOUNCE + FADE */
+        .start-screen {
+          text-align: center;
+          padding: 60px 20px;
+        }
+        .start-screen h2 {
+          font-size: clamp(2.2rem, 8vw, 3.2rem);
+          font-weight: 800;
+          margin: 20px 0;
+          background: linear-gradient(135deg, #60a5fa, #c4b5fd);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: bounceIn 0.8s ease-out;
+        }
+        @keyframes bounceIn {
+          0% { opacity: 0; transform: scale(0.3); }
+          50% { transform: scale(1.08); }
+          70% { transform: scale(0.95); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+        .start-screen p {
+          font-size: clamp(1.1rem, 4.2vw, 1.35rem);
+          margin: 14px 0;
+          opacity: 0;
+          animation: fadeInUp 0.5s ease-out forwards;
+        }
+        .start-screen p:nth-child(2) { animation-delay: 0.3s; }
+        .start-screen p:nth-child(3) { animation-delay: 0.45s; }
+        .start-screen p:nth-child(4) { animation-delay: 0.6s; }
+        @keyframes fadeInUp {
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* SECTION TITLE – SLIDE + GLOW */
+        .section-title {
+          background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+          padding: 14px 18px;
+          border-radius: 16px;
+          margin: 28px 0 18px;
+          font-weight: 700;
+          font-size: clamp(1.15rem, 4.2vw, 1.35rem);
+          text-align: center;
+          box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
+          color: white;
+          opacity: 0;
+          transform: translateX(-30px);
+          animation: slideInGlow 0.5s ease-out forwards;
+        }
+        @keyframes slideInGlow {
+          to { opacity: 1; transform: translateX(0); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35); }
+        }
+
+        /* QUESTION CARD – ZOOM + ELEVATE */
+        .question-card {
+          background: rgba(30, 41, 59, 0.75);
+          backdrop-filter: blur(10px);
+          border-radius: 20px;
+          padding: 24px;
+          margin-bottom: 22px;
+          border: 1px solid rgba(96, 165, 250, 0.3);
+          box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+          opacity: 0;
+          transform: scale(0.94) translateY(20px);
+          animation: cardIn 0.45s ease-out forwards;
+        }
+        @keyframes cardIn {
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .question-card h3 {
+          font-size: clamp(1.2rem, 4.5vw, 1.4rem);
+          margin-bottom: 18px;
+          color: #e0e7ff;
+          font-weight: 600;
+          line-height: 1.4;
+        }
+
+        /* OPTIONS – RIPPLE + SELECT GLOW */
+        .options {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+        .option {
+          padding: 18px;
+          background: rgba(51, 65, 85, 0.7);
+          border-radius: 16px;
+          font-size: clamp(1.05rem, 4vw, 1.2rem);
+          cursor: pointer;
+          user-select: none;
+          border: 2px solid transparent;
+          position: relative;
+          overflow: hidden;
+          transition: all 0.25s ease;
+        }
+        .option::before {
+          content: '';
+          position: absolute;
+          top: 50%; left: 50%;
+          width: 0; height: 0;
+          background: rgba(255,255,255,0.3);
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          transition: width 0.5s, height 0.5s;
+        }
+        .option:active::before {
+          width: 300px; height: 300px;
+        }
+        .option:hover {
+          background: rgba(71, 85, 105, 0.9);
+          transform: translateY(-3px);
+          box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+        .option.selected {
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          color: white;
+          border-color: #60a5fa;
+          font-weight: 700;
+          transform: scale(1.03);
+          box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+          animation: selectPulse 1s infinite;
+        }
+        @keyframes selectPulse {
+          0%, 100% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.6); }
+          50% { box-shadow: 0 0 45px rgba(139, 92, 246, 0.9); }
+        }
+
+        /* BOTTOM BAR – STICKY + ELEVATE */
+        .bottom-bar {
+          position: sticky;
+          bottom: 0;
+          background: rgba(15, 23, 42, 0.95);
+          backdrop-filter: blur(12px);
+          padding: 20px;
+          text-align: center;
+          box-shadow: 0 -6px 24px rgba(0,0,0,0.35);
+          z-index: 10;
+          border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        button {
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          color: white;
+          border: none;
+          padding: 18px 40px;
+          font-size: clamp(1.15rem, 4.8vw, 1.35rem);
+          border-radius: 18px;
+          cursor: pointer;
+          width: 100%;
+          max-width: 360px;
+          font-weight: 700;
+          transition: all 0.3s ease;
+          box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+          position: relative;
+          overflow: hidden;
+        }
+        button::before {
+          content: '';
+          position: absolute;
+          top: 50%; left: 50%;
+          width: 0; height: 0;
+          background: rgba(255,255,255,0.35);
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          transition: width 0.5s, height 0.5s;
+        }
+        button:active::before {
+          width: 280px; height: 280px;
+        }
+        button:disabled {
+          background: #64748b;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+        button:hover:not(:disabled) {
+          background: linear-gradient(135deg, #2563eb, #7c3aed);
+          transform: translateY(-4px) scale(1.05);
+          box-shadow: 0 14px 32px rgba(37, 99, 235, 0.5);
+        }
+
+        /* RESULT SCREEN – POP + CONFETTI */
+        .result-screen {
+          text-align: center;
+          padding: 60px 20px;
+        }
+        .score {
+          font-size: clamp(3.5rem, 12vw, 5.5rem);
+          font-weight: 900;
+          background: linear-gradient(135deg, #10b981, #34d399);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          margin: 20px 0;
+          animation: popIn 0.6s ease-out;
+        }
+        @keyframes popIn {
+          0% { opacity: 0; transform: scale(0.3); }
+          70% { transform: scale(1.1); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+        .feedback {
+          font-size: clamp(1.4rem, 6vw, 1.9rem);
+          margin: 20px 0;
+          font-weight: 700;
+          opacity: 0;
+          animation: fadeInUp 0.6s ease-out 0.3s forwards;
+        }
+
+        /* CONFETTI – FAST & COLORFUL */
+        .confetti {
+          position: fixed;
+          width: 10px;
+          height: 10px;
+          background: #facc15;
+          animation: confettiFall linear forwards;
+          pointer-events: none;
+          z-index: 1000;
+        }
+        @keyframes confettiFall {
+          to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-animation"></div>
+
+<div class="container">
+    <!-- HEADER -->
+    <div class="header">
+        <h1>C1 Grammar Test</h1>
+        <div id="timer" class="timer">45:00</div>
+    </div>
+
+    <!-- START SCREEN -->
+    <div id="startScreen" class="content screen start-screen active">
+        <div class="start-screen">
+            <h2>C1 Advanced</h2>
+            <p><strong>40</strong> challenging questions</p>
+            <p><strong>45 minutes</strong> • <strong>40 points</strong></p>
+            <p>Master advanced grammar structures!</p>
+            <div class="bottom-bar">
+                <button onclick="startTest()">Start Test</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEST SCREEN -->
+    <div id="testScreen" class="content screen test-screen">
+        <div id="questionContainer"></div>
+        <div class="bottom-bar">
+            <button id="nextBtn" onclick="nextQuestion()" disabled>Next Question</button>
+        </div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="resultScreen" class="content screen result-screen">
+        <h2>Test Complete!</h2>
+        <p>You answered <strong><span id="correctCount"></span></strong> out of 40 correctly.</p>
+        <div class="score" id="totalScore"></div>
+        <p class="feedback" id="feedback"></p>
+        <div class="bottom-bar">
+            <button onclick="location.reload()">Retake Test</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== 40 QUESTIONS ====================
+    const questions = [
+      { section: "Present Perfect & Continuous", q: "She ___ (never / see) such an impressive performance before.", o: ["never saw","has never seen","never has seen","had never seen"], a:1 },
+      { q: "I ___ (work) all morning, and I still haven’t finished this report.", o: ["worked","have worked","have been working","am working"], a:2 },
+      { q: "They ___ (be) married for over twenty years.", o: ["were","are being","have been","had been"], a:2 },
+      { q: "How long ___ you ___ (wait) for me?", o: ["have / waited","have / been waiting","did / wait","are / waiting"], a:1 },
+      { q: "He looks tired because he ___ (run).", o: ["was running","runs","has run","has been running"], a:3 },
+      { q: "I can’t find my keys – I think I ___ (lose) them.", o: ["lost","have lost","am losing","was losing"], a:1 },
+      { q: "The weather ___ (be) really strange this week.", o: ["was","has been","is being","had been"], a:1 },
+      { q: "We ___ (study) hard recently because exams are coming.", o: ["study","studied","have been studying","had studied"], a:2 },
+      { section: "Future Perfect & Continuous", q: "By next month, I ___ (finish) all my university exams.", o: ["will finish","will have finished","finish","will be finishing"], a:1 },
+      { q: "By 2026, she ___ (live) in Japan for ten years.", o: ["will live","will be living","will have lived","will have been living"], a:3 },
+      { q: "This time tomorrow, we ___ (fly) over the Atlantic.", o: ["will fly","are flying","will be flying","fly"], a:2 },
+      { q: "By the end of this week, you ___ (complete) your report.", o: ["will complete","will have completed","have completed","will be completing"], a:1 },
+      { q: "In two years’ time, I ___ (work) here for a decade.", o: ["will have worked","will be working","will have been working","work"], a:2 },
+      { q: "Don’t call me after 9 p.m. — I ___ (sleep) by then.", o: ["will sleep","will have slept","will be sleeping","sleep"], a:2 },
+      { q: "By the time we get there, the movie ___ (already / start).", o: ["will start","will have started","started","has started"], a:1 },
+      { q: "At this rate, they ___ (build) the bridge for more than three years by next winter.", o: ["will be building","will have built","will have been building","build"], a:2 },
+      { section: "Modals", q: "You ___ worry about the tickets — I’ve already bought them.", o: ["mustn’t","don’t need to","needn’t","shouldn’t"], a:2 },
+      { q: "If I had more time, I ___ travel the world.", o: ["will","would","could","can"], a:1 },
+      { q: "When I was younger, I ___ run faster than anyone in my class.", o: ["can","could","was able","might"], a:1 },
+      { q: "You ___ at least say thank you when someone helps you.", o: ["could","can","should","would"], a:2 },
+      { q: "He said he ___ finish it by Friday, but he didn’t.", o: ["would","will","can","might"], a:0 },
+      { q: "You ___ have told me the truth instead of lying.", o: ["would","could","might","should"], a:3 },
+      { q: "You ___ smoke here — it’s a non-smoking area.", o: ["don’t have to","can’t","couldn’t","may not"], a:1 },
+      { q: "___ you help me carry these boxes, please?", o: ["Will","Could","Would","Can"], a:3 },
+      { section: "Imperatives", q: "___ your homework before going out!", o: ["Do","Doing","To do","Did"], a:0 },
+      { q: "___ be late for the interview!", o: ["Don’t","Not","No","Never to"], a:0 },
+      { q: "Please ___ your name at the bottom of the page.", o: ["writing","written","write","to write"], a:2 },
+      { q: "___ quiet during the exam, please.", o: ["Be","Being","Are","Been"], a:0 },
+      { section: "Question Tags", q: "It’s a beautiful day, ___?", o: ["isn’t it","is it","doesn’t it","wasn’t it"], a:0 },
+      { q: "You didn’t tell her about it, ___?", o: ["did you","didn’t you","do you","were you"], a:0 },
+      { q: "Let’s go for a walk, ___?", o: ["don’t we","shall we","will we","aren’t we"], a:1 },
+      { q: "You can drive, ___?", o: ["can you","can’t you","could you","will you"], a:1 },
+      { q: "She would’ve helped you, ___?", o: ["didn’t she","would she","wouldn’t she","hadn’t she"], a:2 },
+      { q: "Open the window, ___?", o: ["don’t you","will you","shall you","do you"], a:1 },
+      { q: "He hardly ever calls, ___?", o: ["does he","doesn’t he","did he","will he"], a:0 },
+      { q: "Nobody remembered his birthday, ___?", o: ["did they","didn’t they","do they","will they"], a:0 },
+      { section: "Mixed Grammar", q: "I can’t believe you’re late again! I ___ (wait) for over an hour!", o: ["have waited","have been waiting","waited","am waiting"], a:1 },
+      { q: "By the time you arrive, we ___ dinner.", o: ["will have finished","will finish","will be finishing","finish"], a:0 },
+      { q: "If you had told me earlier, I ___ helped you.", o: ["could have","can","will have","would"], a:0 },
+      { q: "This time next year, I ___ in Canada for six months.", o: ["will live","will be living","will have lived","will have been living"], a:3 }
+    ];
+
+    // ==================== TIMER ====================
+    const TOTAL_TIME = 45 * 60;
+    let timeLeft = TOTAL_TIME;
+    let timerId = null;
+    const timerEl = document.getElementById('timer');
+
+    function formatTime(sec){
+      const m = String(Math.floor(sec/60)).padStart(2,'0');
+      const s = String(sec%60).padStart(2,'0');
+      return `${m}:${s}`;
+    }
+
+    function startTimer(){
+      timerEl.textContent = formatTime(timeLeft);
+      timerId = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = formatTime(timeLeft);
+        if (timeLeft <= 0) {
+          clearInterval(timerId);
+          finishTest();
+        }
+        if (timeLeft <= 60) timerEl.style.animation = 'timerPulse 0.5s infinite';
+      }, 1000);
+    }
+
+    function stopTimer(){ clearInterval(timerId); }
+
+    // ==================== TEST LOGIC ====================
+    let current = 0;
+    let answers = [];
+    let selected = -1;
+    const letters = ['A','B','C','D'];
+    let currentSection = "";
+
+    function startTest(){
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      setTimeout(() => document.getElementById('testScreen').classList.add('active'), 50);
+      timeLeft = TOTAL_TIME;
+      startTimer();
+      showQuestion();
+    }
+
+    function showQuestion(){
+      const q = questions[current];
+      if (q.section !== currentSection) {
+        currentSection = q.section;
+        const sectionDiv = document.createElement('div');
+        sectionDiv.className = 'section-title';
+        sectionDiv.innerHTML = q.section;
+        sectionDiv.style.animationDelay = '0.1s';
+        document.getElementById('questionContainer').appendChild(sectionDiv);
+      }
+
+      const container = document.getElementById('questionContainer');
+      const qCard = document.createElement('div');
+      qCard.className = 'question-card';
+      qCard.style.animationDelay = `${0.2 + (current % 6) * 0.05}s`;
+      qCard.innerHTML = `
+        <h3>Question ${current+1}: ${q.q}</h3>
+        <div class="options">
+          ${q.o.map((opt,i) => `
+            <div class="option" onclick="selectOption(${i})">
+              <strong>${letters[i]})</strong> ${opt}
+            </div>
+          `).join('')}
+        </div>
+      `;
+      container.appendChild(qCard);
+      document.getElementById('nextBtn').disabled = true;
+      selected = -1;
+
+      setTimeout(() => {
+        qCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    }
+
+    function selectOption(i){
+      const options = document.querySelectorAll('#questionContainer .question-card:last-child .option');
+      options.forEach((el,j) => el.classList.toggle('selected', i===j));
+      selected = i;
+      document.getElementById('nextBtn').disabled = false;
+    }
+
+    function nextQuestion(){
+      if (selected === -1) return;
+      answers.push(selected);
+      current++;
+      if (current < questions.length){
+        showQuestion();
+      } else {
+        finishTest();
+      }
+    }
+
+    function finishTest(){
+      stopTimer();
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      setTimeout(() => document.getElementById('resultScreen').classList.add('active'), 100);
+
+      const correct = answers.filter((a,i) => a === questions[i].a).length;
+      const percentage = Math.round((correct / 40) * 100);
+
+      let feedback = "";
+      if (correct <= 20) feedback = "Keep practicing! C1 is challenging.";
+      else if (correct <= 30) feedback = "Good effort! You're getting there.";
+      else if (correct <= 35) feedback = "Well done! Strong C1 level.";
+      else feedback = "Excellent! Native-like mastery!";
+
+      document.getElementById('correctCount').textContent = correct;
+      document.getElementById('totalScore').textContent = `${correct} / 40`;
+      document.getElementById('feedback').innerHTML = `${feedback}<br><small style="opacity:0.8;">(${percentage}%)</small>`;
+
+      if (correct >= 36) createConfetti();
+    }
+
+    function createConfetti() {
+      const colors = ['#facc15', '#34d399', '#60a5fa', '#f87171', '#c084fc'];
+      for (let i = 0; i < 100; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.animationDuration = (Math.random() * 1.8 + 1.2) + 's';
+        c.style.animationDelay = Math.random() * 0.4 + 's';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 3500);
+      }
+    }
+</script>
+
+</body>
+</html>
